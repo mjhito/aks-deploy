@@ -1,4 +1,4 @@
-name: 'Provision AKS and Deploy Juice Shop'
+name: 'Provision AKS'
 on: workflow_dispatch
 
 jobs:
