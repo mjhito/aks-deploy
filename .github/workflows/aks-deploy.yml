@@ -1,14 +1,14 @@
-name: 'Provision AKS'
+name: 'Provision AKS with Terraform'
 on: workflow_dispatch
 
 jobs:
   provision-aks:
-    name: 'Deploy Terraform for AKS'
+    name: 'Deploy AKS via Terraform'
     runs-on: ubuntu-latest
     environment: production
 
     steps:
-    - name: Checkout
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
     - name: Setup Terraform
@@ -33,10 +33,19 @@ jobs:
     - name: Terraform Init
       run: terraform -chdir=terraform init
 
+    - name: Terraform Validate
+      run: terraform -chdir=terraform validate
+
+    - name: Terraform Plan
+      run: terraform -chdir=terraform plan
+
     - name: Terraform Apply
       run: terraform -chdir=terraform apply -auto-approve
 
     - name: Configure kubectl for AKS
       run: |
-        az aks get-credentials --resource-group aks-rg --name demo-aks --overwrite-existing
+        az aks get-credentials \
+          --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} \
+          --name ${{ secrets.AKS_CLUSTER_NAME }} \
+          --overwrite-existing
         kubectl get nodes
